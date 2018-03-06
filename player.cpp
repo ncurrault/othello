@@ -81,11 +81,11 @@ int Player::tryMove(Board* board, Move* move, Side side, int depth) {
     Board* newBoard = board->copy();
     newBoard->doMove(move, side);
     int value = newBoard->getValue(side);
-    /*if (testingMinimax) {
+    if (testingMinimax) {
         value = newBoard->getNaiveValue(side);
     } else {
         value = newBoard->getValue(side);
-    }*/
+    }
 
     if (depth == 0) {
         return value;

@@ -178,7 +178,13 @@ void Board::setBoard(char data[]) {
         }
     }
 }
-
+int Board::getNaiveValue(Side side){
+    int score = countBlack()-countWhite();
+    if(side==Side::WHITE){
+        score=-score;
+    }
+    return score;
+}
 int Board::getValue(Side side){
     int score = countBlack()-countWhite();
     if(side==Side::WHITE){

@@ -34,6 +34,7 @@ public:
     void setBoard(char data[]);
 
     int getValue(Side side);
+    int getNaiveValue(Side side);
 };
 
 #endif
