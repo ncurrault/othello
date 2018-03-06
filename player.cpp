@@ -42,15 +42,22 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     Move *m =new Move(0,0);
     int best_score=INT_MIN;
     Move *best=nullptr;
-    Board * new_board;
+    //Board * new_board;
     for(int i=0; i<8; i++){
         for(int j=0; j<8; j++){
             m->setX(i);
             m->setY(j);
             if(b.checkMove(m, playerSide)){
-                new_board =b.copy();
-                new_board->doMove(m,playerSide);
-                int val = new_board->getValue(playerSide);
+                int val;
+                if (testingMinimax) {
+                    val = tryMove(&b, m, playerSide, 1);
+                } else {
+                    val = tryMove(&b, m, playerSide, 3);
+                }
+                    // new_board = b.copy();
+                    // new_board->doMove(m,playerSide);
+                    // val = new_board->getValue(playerSide);
+                    // delete new_board;
                 if(val>best_score){
                     if(best==nullptr){
                         best=new Move(i,j);
@@ -61,12 +68,54 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
                     }
                     best_score=val;
                 }
-                delete new_board;
+
             }
         }
     }
     b.doMove(best,playerSide);
     return best;
+}
+
+int Player::tryMove(Board* board, Move* move, Side side, int depth) {
+    Board* newBoard = board->copy();
+    newBoard->doMove(move, side);
+    int value = newBoard->getValue(side);
+    /*if (testingMinimax) {
+        value = newBoard->getNaiveValue(side);
+    } else {
+        value = newBoard->getValue(side);
+    }*/
+
+    if (depth == 0) {
+        return value;
+    } else {
+        Side other = (side == Side::BLACK) ? Side::WHITE : Side::BLACK;
+        Move* oppMove = new Move(0, 0);
+        Move* best = nullptr;
+        int maxSoFar = -1;
+
+        for(int i = 0; i < 8; i++) {
+            oppMove->setX(i);
+            for(int j = 0; j < 8; j++) {
+                oppMove->setY(j);
+                if(board->checkMove(oppMove, other)){
+                    int newVal = tryMove(newBoard, oppMove, other, depth - 1);
+                    if (newVal > maxSoFar) {
+                        if (best == nullptr) {
+                            best=new Move(i,j);
+                        }
+                        else {
+                            best->setX(i);
+                            best->setY(j);
+                        }
+                        maxSoFar = newVal;
+                    }
+                }
+            }
+        }
+
+        return value - maxSoFar;
+    }
 }
 
 void Player::setBoard(char data[]) {
