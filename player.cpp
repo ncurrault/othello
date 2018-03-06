@@ -6,6 +6,8 @@
  * within 30 seconds.
  */
 Player::Player(Side side) {
+    playerSide=side;
+    opponentSide=playerSide==Side::BLACK ? Side::WHITE : Side::BLACK;
     // Will be set to true in test_minimax.cpp.
     testingMinimax = false;
 
@@ -36,9 +38,15 @@ Player::~Player() {
  * return nullptr.
  */
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
-    /*
-     * TODO: Implement how moves your AI should play here. You should first
-     * process the opponent's opponents move before calculating your own move
-     */
+    b.doMove(opponentsMove,opponentSide);
+    Move *m =new Move(0,0);
+    for(int i=0; i<64; i++){
+        m->setX(i/8);
+        m->setY(i%8);
+        if(b.checkMove(m, playerSide)){
+            b.doMove(m,playerSide);
+            return m;
+        }
+    }
     return nullptr;
 }
