@@ -43,5 +43,10 @@ int main(int argc, char *argv[]) {
         std::cout << ", expected (1, 1)" << std::endl;
     }
 
+    // added to prevent memory leaks
+    delete board;
+    delete player;
+    delete move;
+
     return 0;
 }

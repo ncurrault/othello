@@ -50,17 +50,24 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         tryMove(b, m, playerSide, FULL_MINIMAX_DEPTH);
     }
 
-    b.doMove(m, playerSide);
+    if (m != nullptr) {
+        b.doMove(m, playerSide);
+    }
 
     return m;
 }
 
+/**
+ * Get the value of a given move by analyzing `depth` levels of the minimax tree
+ * If move is nullptr, all moves are tried and move is set to the optimal one
+ * (or leave move as nullptr if there are no valid moves)
+ */
 int Player::tryMove(Board board, Move*& move, Side side, int depth) {
-    board.doMove(move, side);
     int value = 0;
     if (move == nullptr) {
         side = (side == Side::BLACK) ? Side::WHITE : Side::BLACK;
     } else {
+        board.doMove(move, side);
         if (testingMinimax) {
             value = board.getNaiveValue(side);
         } else {
@@ -94,11 +101,13 @@ int Player::tryMove(Board board, Move*& move, Side side, int depth) {
             }
         }
 
+        delete oppMove;
         if (move == nullptr) {
             move = best;
             return maxSoFar;
         } else {
-            return value - maxSoFar;
+            delete best;
+            return -maxSoFar;
         }
     }
 }
