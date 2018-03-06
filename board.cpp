@@ -190,8 +190,7 @@ int Board::getValue(Side side){
     int inner[2] = {1,6};
     int stable=getStableCells(side);
 
-    std::cerr << stable << std::endl;
-    score+=stable;
+    score+=2*stable;
     for(int i=0; i<2; i++){
         for(int j=0; j<2; j++){
             if(get(side,outer[i],outer[j])){
