@@ -185,19 +185,17 @@ int Board::getValue(Side side){
         score=-score;
     }
     //corners: 00 07 70 77
-    for(int i=0; i<8; i+=7){
-        for(int j=0; j<8; j+=7){
-            if(get(side,i,j)){
+    //inners:  11 16 61 66
+    int outer[2] = {0,7};
+    int inner[2] = {1,6};
+    for(int i=0; i<2; i++){
+        for(int j=0; j<2; j++){
+            if(get(side,outer[i],outer[j])){
                 score*=3;
             }
-        }
-    }
-    //inner corners = bad
-    for(int i=1; i<7; i+=5){
-        for(int j=1; j<7; j+=5){
-            if(get(side,i,j) &&!get(side,)){
+            /**else if(get(side,inner[i],inner[j])){
                 score*=-3;
-            }
+            }**/
         }
     }
     return score;
