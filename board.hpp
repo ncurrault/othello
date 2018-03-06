@@ -3,6 +3,7 @@
 
 #include <bitset>
 #include "common.hpp"
+#include <iostream>
 using namespace std;
 
 class Board {
@@ -15,6 +16,7 @@ private:
     bool get(Side side, int x, int y);
     void set(Side side, int x, int y);
     bool onBoard(int x, int y);
+    int getStableCells(Side side);
 
 public:
     Board();

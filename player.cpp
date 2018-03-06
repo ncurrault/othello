@@ -38,6 +38,7 @@ Player::~Player() {
  * return nullptr.
  */
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
+    std::cerr<<"--------"<<std::endl;
     b.doMove(opponentsMove,opponentSide);
     Move *m =new Move(0,0);
     int best_score=INT_MIN;
@@ -73,6 +74,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         }
     }
     b.doMove(best,playerSide);
+    b.getValue(playerSide);
     return best;
 }
 

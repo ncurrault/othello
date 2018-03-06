@@ -188,15 +188,69 @@ int Board::getValue(Side side){
     //inners:  11 16 61 66
     int outer[2] = {0,7};
     int inner[2] = {1,6};
+    int stable=getStableCells(side);
+
+    std::cerr << stable << std::endl;
+    score+=stable;
     for(int i=0; i<2; i++){
         for(int j=0; j<2; j++){
             if(get(side,outer[i],outer[j])){
                 score*=3;
             }
-            /**else if(get(side,inner[i],inner[j])){
-                score*=-3;
-            }**/
+            else if(get(side,inner[i],inner[j])){
+                score/=2;
+            }
         }
     }
+
     return score;
+}
+
+int Board::getStableCells(Side side){
+    bitset<64> stable;
+    //things stable from top left
+    for(int y=0; y<8; y++){
+        for(int x=0; x<8; x++){
+            if(!get(side,x,y))
+                break;
+            if(y!=0 && !stable[x+8*(y-1)])
+                break;
+            stable.set(x+8*y);
+        }
+    }
+    //things stable from top right
+    for(int y=0; y<8; y++){
+        for(int x=7; x>=0; x--){
+            if(!get(side,x,y))
+                break;
+            if(y!=0 && !stable[x+8*(y-1)])
+                break;
+            stable.set(x+8*y);
+        }
+    }
+    //things stable from bottom right
+    for(int y=7; y>=0; y--){
+        for(int x=7; x>=0; x--){
+            if(!get(side,x,y))
+                break;
+            if(y!=7 && !stable[x+8*(y+1)])
+                break;
+            stable.set(x+8*y);
+        }
+    }
+    //things stable from bottom left
+    for(int y=7; y>=0; y--){
+        for(int x=0; x<8; x++){
+            if(!get(side,x,y))
+                break;
+            if(y!=7 && !stable[x+8*(y+1)])
+                break;
+            stable.set(x+8*y);
+        }
+    }
+    int stable_sum=0;
+    for(int i=0; i<64; i++){
+        stable_sum+=stable[i];
+    }
+    return stable_sum;
 }
