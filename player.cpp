@@ -40,13 +40,31 @@ Player::~Player() {
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
     b.doMove(opponentsMove,opponentSide);
     Move *m =new Move(0,0);
-    for(int i=0; i<64; i++){
-        m->setX(i/8);
-        m->setY(i%8);
-        if(b.checkMove(m, playerSide)){
-            b.doMove(m,playerSide);
-            return m;
+    int best_score=INT_MIN;
+    Move *best=nullptr;
+    Board * new_board;
+    for(int i=0; i<8; i++){
+        for(int j=0; j<8; j++){
+            m->setX(i);
+            m->setY(j);
+            if(b.checkMove(m, playerSide)){
+                new_board =b.copy();
+                new_board->doMove(m,playerSide);
+                int val = new_board->getValue(playerSide);
+                if(val>best_score){
+                    if(best==nullptr){
+                        best=new Move(i,j);
+                    }
+                    else{
+                        best->setX(i);
+                        best->setY(j);
+                    }
+                    best_score=val;
+                }
+                delete new_board;
+            }
         }
     }
-    return nullptr;
+    b.doMove(best,playerSide);
+    return best;
 }

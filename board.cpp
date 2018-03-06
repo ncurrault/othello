@@ -178,3 +178,18 @@ void Board::setBoard(char data[]) {
         }
     }
 }
+
+int Board::getValue(Side side){
+    int score = countBlack()-countWhite();
+    if(side==Side::WHITE){
+        score=-score;
+    }
+    for(int i=0; i<8; i+=7){
+        for(int j=0; j<8; j+=7){
+            if(get(side,i,j)){
+                score*=3;
+            }
+        }
+    }
+    return score;
+}
