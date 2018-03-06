@@ -93,7 +93,7 @@ int Player::tryMove(Board* board, Move* move, Side side, int depth) {
         Side other = (side == Side::BLACK) ? Side::WHITE : Side::BLACK;
         Move* oppMove = new Move(0, 0);
         Move* best = nullptr;
-        int maxSoFar = -1;
+        int maxSoFar = INT_MIN;
 
         for(int i = 0; i < 8; i++) {
             oppMove->setX(i);
