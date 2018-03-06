@@ -50,3 +50,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     }
     return nullptr;
 }
+
+void Player::setBoard(char data[]) {
+    b.setBoard(data);
+}
