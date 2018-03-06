@@ -4,6 +4,7 @@
 #include <iostream>
 #include "common.hpp"
 #include "board.hpp"
+#include "climits"
 using namespace std;
 
 class Player {
