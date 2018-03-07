@@ -63,20 +63,20 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
  * (or leave move as nullptr if there are no valid moves)
  */
 int Player::tryMove(Board board, Move*& move, Side side, int depth) {
-    int value = 0;
     if (move == nullptr) {
+        /* if move is null, we want to first optimize the move,
+        so the "other side" to optimize is actually the player side */
         side = (side == Side::BLACK) ? Side::WHITE : Side::BLACK;
     } else {
         board.doMove(move, side);
-        if (testingMinimax) {
-            value = board.getNaiveValue(side);
-        } else {
-            value = board.getValue(side);
-        }
     }
 
     if (depth == 0) {
-        return value;
+        if (testingMinimax) {
+            return board.getNaiveValue(side);
+        } else {
+            return board.getValue(side);
+        }
     } else {
         Side other = (side == Side::BLACK) ? Side::WHITE : Side::BLACK;
         Move* oppMove = new Move(0, 0);
@@ -103,7 +103,7 @@ int Player::tryMove(Board board, Move*& move, Side side, int depth) {
 
         delete oppMove;
         if (move == nullptr) {
-            move = best;
+            move = best; // return the best move using this reference param
             return maxSoFar;
         } else {
             delete best;
