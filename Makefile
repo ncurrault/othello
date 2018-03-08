@@ -3,7 +3,7 @@ CFLAGS      = -std=c++11 -Wall -pedantic -ggdb
 OBJS        = player.o board.o
 PLAYERNAME  = DROPTABLETeamNames
 
-all: $(PLAYERNAME) testgame
+all: $(PLAYERNAME) testgame testminimax
 
 $(PLAYERNAME): $(OBJS) wrapper.o
 	$(CC) -o $@ $^
