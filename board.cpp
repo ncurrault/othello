@@ -259,3 +259,79 @@ int Board::getStableCells(Side side){
     }
     return stable_sum;
 }
+
+int Board::lossQuadrantValue(int quadrant, bool considerVert, int numVert, bool considerHoriz, int numHoriz) {
+    int xStart = 0;
+    int yStart = 0;
+    if (quadrant == 3 or quadrant == 4) {
+        yStart = 4;
+    }
+    if (quadrant == 2 || quadrant == 4){
+        xStart = 4;
+    }
+
+    std::vector<int> colSums( {0, 0, 0, 0} );
+    std::vector<int> rowSums( {0, 0, 0, 0} );
+
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            int occ = occupied(xStart + i, yStart + j);
+            int color = get(Side::WHITE, xStart + i, yStart + j);
+
+            rowSums[i] += color;
+            colSums[j] += color;
+        }
+    }
+
+    int val = 0;
+    if (considerHoriz) {
+        while (numHoriz > 0) {
+            int max = INT_MIN;
+            int maxI = -1;
+            for (unsigned int i = 0; i < rowSums.size(); i++) {
+                if (rowSums[i] > max) {
+                    max = rowSums[i];
+                    maxI = i;
+                }
+            }
+            val += max;
+            rowSums.erase(rowSums.begin() + maxI);
+
+            numHoriz--;
+        }
+        for (int n : rowSums) {
+            val -= n;
+        }
+    }
+    if (considerVert) {
+        while (numVert > 0) {
+            int max = INT_MIN;
+            int maxI = -1;
+            for (unsigned int i = 0; i < colSums.size(); i++) {
+                if (colSums[i] > max) {
+                    max = colSums[i];
+                    maxI = i;
+                }
+            }
+            val += max;
+            colSums.erase(colSums.begin() + maxI);
+
+            numVert--;
+        }
+        for (int n : colSums) {
+            val -= n;
+        }
+    }
+
+    if (considerVert && considerHoriz) {
+        val /= 2; // maybe unnecessary?
+    }
+
+    return val;
+}
+int Board::getLossJpgValue() {
+    return lossQuadrantValue(1, true, 1, false, 0)
+        +  lossQuadrantValue(2, true, 2, false, 0)
+        +  lossQuadrantValue(3, true, 2, false, 0)
+        +  lossQuadrantValue(4, true, 1, true , 1);
+}

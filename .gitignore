@@ -1,5 +1,5 @@
 *.o
-DROPTABLETeamNames
+IsThisLoss
 testgame
 testminimax
 hs_err_*.log

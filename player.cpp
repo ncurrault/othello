@@ -64,19 +64,14 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
  */
 int Player::tryMove(Board board, Move*& move, Side side, int depth) {
     if (move == nullptr) {
-        /* if move is null, we want to first optimize the move,
-        so the "other side" to optimize is actually the player side */
         side = (side == Side::BLACK) ? Side::WHITE : Side::BLACK;
     } else {
         board.doMove(move, side);
     }
 
     if (depth == 0) {
-        if (testingMinimax) {
-            return board.getNaiveValue(side);
-        } else {
-            return board.getValue(side);
-        }
+        //if (board.countBlack() + board.countWhite() < 5)
+        return board.getLossJpgValue();
     } else {
         Side other = (side == Side::BLACK) ? Side::WHITE : Side::BLACK;
         Move* oppMove = new Move(0, 0);
@@ -107,7 +102,7 @@ int Player::tryMove(Board board, Move*& move, Side side, int depth) {
             return maxSoFar;
         } else {
             delete best;
-            return -maxSoFar;
+            return maxSoFar; // actually maximax for now
         }
     }
 }

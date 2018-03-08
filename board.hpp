@@ -4,6 +4,9 @@
 #include <bitset>
 #include "common.hpp"
 #include <iostream>
+#include <vector>
+#include "climits"
+
 using namespace std;
 
 class Board {
@@ -17,6 +20,8 @@ private:
     void set(Side side, int x, int y);
     bool onBoard(int x, int y);
     int getStableCells(Side side);
+
+    int lossQuadrantValue(int quadrant, bool considerVert, int numVert, bool considerHoriz, int numHoriz);
 
 public:
     Board();
@@ -35,6 +40,8 @@ public:
 
     int getValue(Side side);
     int getNaiveValue(Side side);
+
+    int getLossJpgValue();
 };
 
 #endif
