@@ -48,9 +48,9 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     int beta = INT_MAX-5;
 
     if (testingMinimax) {
-        tryMove(b, m, playerSide, false, alpha, beta, TEST_MINIMAX_DEPTH);
+        tryMove(b, m, playerSide, true, alpha, beta, TEST_MINIMAX_DEPTH);
     } else {
-        tryMove(b, m, playerSide, false, alpha, beta, FULL_MINIMAX_DEPTH);
+        tryMove(b, m, playerSide, true, alpha, beta, FULL_MINIMAX_DEPTH);
     }
 
     if (m != nullptr) {
@@ -75,11 +75,7 @@ int Player::tryMove(Board board, Move*& move, Side side, bool isOpponent, int al
     }
 
     if (depth == 0) {
-        if (testingMinimax) {
-            return board.getNaiveValue(side);
-        } else {
-            return board.getValue(side);
-        }
+        return board.getValue(isOpponent ? ((side == Side::BLACK) ? Side::WHITE : Side::BLACK) : side);
     } else {
         Side other = (side == Side::BLACK) ? Side::WHITE : Side::BLACK;
         Move* oppMove = new Move(0, 0);
