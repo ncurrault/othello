@@ -2,6 +2,7 @@
 #define __BOARD_H__
 
 #include <bitset>
+#include <cstdint>
 #include "common.hpp"
 #include <iostream>
 using namespace std;
@@ -9,8 +10,14 @@ using namespace std;
 class Board {
 
 private:
-    bitset<64> black;
-    bitset<64> taken;
+    uint_fast64_t black;
+    uint_fast64_t taken;
+
+    bool bitstringGet(uint_fast64_t bitstring, int i);
+    bool bitstringGet(uint_fast64_t bitstring, int x, int y);
+    void bitstringSet(uint_fast64_t& bitstring, int i, bool val);
+    void bitstringSet(uint_fast64_t& bitstring, int x, int y, bool val);
+    int bitstringCount(uint_fast64_t bitstring);
 
     bool occupied(int x, int y);
     bool get(Side side, int x, int y);

@@ -4,12 +4,12 @@
  * Make a standard 8x8 othello board and initialize it to the standard setup.
  */
 Board::Board() {
-    taken.set(3 + 8 * 3);
-    taken.set(3 + 8 * 4);
-    taken.set(4 + 8 * 3);
-    taken.set(4 + 8 * 4);
-    black.set(4 + 8 * 3);
-    black.set(3 + 8 * 4);
+    //black = 0b0000000000000000000000000000100000010000000000000000000000000000;
+    //taken = 0b0000000000000000000000000001100000011000000000000000000000000000;
+    // using constants gives a warning
+
+    black = ((uint_fast64_t)1 << 35) + ((uint_fast64_t)1 << 28);
+    taken = ((uint_fast64_t)1 << 36) + ((uint_fast64_t)1 << 35) + ((uint_fast64_t)1 << 28) + ((uint_fast64_t)1 << 27);
 }
 
 /*
@@ -28,17 +28,46 @@ Board *Board::copy() {
     return newBoard;
 }
 
+bool Board::bitstringGet(uint_fast64_t bitstring, int i) {
+    return 1 & (bitstring >> i);
+}
+bool Board::bitstringGet(uint_fast64_t bitstring, int x, int y) {
+    return bitstringGet(bitstring, x + 8 * y);
+}
+void Board::bitstringSet(uint_fast64_t& bitstring, int i, bool val) {
+    if (val != bitstringGet(bitstring, i)) {
+        if (val) {
+            bitstring |= ((uint_fast64_t)1 << i);
+        } else {
+            bitstring -= ((uint_fast64_t)1 << i);
+        }
+    }
+}
+void Board::bitstringSet(uint_fast64_t& bitstring, int x, int y, bool val) {
+    bitstringSet(bitstring, x + 8 * y, val);
+}
+
+
+int Board::bitstringCount(uint_fast64_t bitstring) {
+    int val = 0;
+    while (bitstring != 0) {
+        val += bitstring & 1;
+        bitstring >>= 1;
+    }
+    return val;
+}
+
 bool Board::occupied(int x, int y) {
-    return taken[x + 8*y];
+    return bitstringGet(taken, x, y);
 }
 
 bool Board::get(Side side, int x, int y) {
-    return occupied(x, y) && (black[x + 8*y] == (side == BLACK));
+    return occupied(x, y) && (bitstringGet(black, x, y) == (side == BLACK));
 }
 
 void Board::set(Side side, int x, int y) {
-    taken.set(x + 8*y);
-    black.set(x + 8*y, side == BLACK);
+    bitstringSet(taken, x + 8*y, true);
+    bitstringSet(black, x + 8*y, side == BLACK);
 }
 
 bool Board::onBoard(int x, int y) {
@@ -152,14 +181,14 @@ int Board::count(Side side) {
  * Current count of black stones.
  */
 int Board::countBlack() {
-    return black.count();
+    return bitstringCount(black);
 }
 
 /*
  * Current count of white stones.
  */
 int Board::countWhite() {
-    return taken.count() - black.count();
+    return bitstringCount(taken) - bitstringCount(black);
 }
 
 /*
@@ -167,14 +196,14 @@ int Board::countWhite() {
  * piece and 'b' indicates a black piece. Mainly for testing purposes.
  */
 void Board::setBoard(char data[]) {
-    taken.reset();
-    black.reset();
+    taken = 0;
+    black = 0;
     for (int i = 0; i < 64; i++) {
         if (data[i] == 'b') {
-            taken.set(i);
-            black.set(i);
+            bitstringSet(taken, i, true);
+            bitstringSet(black, i, true);
         } if (data[i] == 'w') {
-            taken.set(i);
+            bitstringSet(taken, i, true);
         }
     }
 }
