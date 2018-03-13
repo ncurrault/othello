@@ -221,13 +221,18 @@ int Board::getValue(Side side){
         score = -score;
     }
 
+    if (isDone()) {
+        return score;
+        // we shouldn't do any heuristic weighting if we're optimizing the final board
+    }
+
     //corners: 00 07 70 77
     //inners:  11 16 61 66
     int outer[2] = {0,7};
     int inner[2] = {1,6};
     int stable=getStableCells(side);
 
-    score+=2*stable;
+    score+=4*stable;
     for(int i=0; i<2; i++){
         for(int j=0; j<2; j++){
             if(get(side,outer[i],outer[j])){
