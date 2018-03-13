@@ -44,10 +44,13 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     b.doMove(opponentsMove,opponentSide);
 
     Move *m = nullptr;
+    int alpha = INT_MIN;
+    int beta = INT_MAX;
+
     if (testingMinimax) {
-        tryMove(b, m, playerSide, TEST_MINIMAX_DEPTH);
+        tryMove(b, m, playerSide, false, alpha, beta, TEST_MINIMAX_DEPTH);
     } else {
-        tryMove(b, m, playerSide, FULL_MINIMAX_DEPTH);
+        tryMove(b, m, playerSide, false, alpha, beta, FULL_MINIMAX_DEPTH);
     }
 
     if (m != nullptr) {
@@ -62,7 +65,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
  * If move is nullptr, all moves are tried and move is set to the optimal one
  * (or leave move as nullptr if there are no valid moves)
  */
-int Player::tryMove(Board board, Move*& move, Side side, int depth) {
+int Player::tryMove(Board board, Move*& move, Side side, bool isOpponent, int& alpha, int& beta, int depth) {
     if (move == nullptr) {
         /* if move is null, we want to first optimize the move,
         so the "other side" to optimize is actually the player side */
