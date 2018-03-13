@@ -1,7 +1,7 @@
 #include "player.hpp"
 
 #define TEST_MINIMAX_DEPTH 2
-#define FULL_MINIMAX_DEPTH 8
+#define FULL_MINIMAX_DEPTH 9
 
 /*
  * Constructor for the player; initialize everything here. The side your AI is
