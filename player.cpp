@@ -1,7 +1,7 @@
 #include "player.hpp"
 
 #define TEST_MINIMAX_DEPTH 2
-#define FULL_MINIMAX_DEPTH 9
+#define FULL_MINIMAX_DEPTH 6
 
 /*
  * Constructor for the player; initialize everything here. The side your AI is
@@ -44,13 +44,10 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     b.doMove(opponentsMove,opponentSide);
 
     Move *m = nullptr;
-    int alpha = INT_MIN+5;
-    int beta = INT_MAX-5;
-
     if (testingMinimax) {
-        tryMove(b, m, playerSide, true, alpha, beta, TEST_MINIMAX_DEPTH);
+        tryMove(b, m, playerSide, TEST_MINIMAX_DEPTH);
     } else {
-        tryMove(b, m, playerSide, true, alpha, beta, FULL_MINIMAX_DEPTH);
+        tryMove(b, m, playerSide, FULL_MINIMAX_DEPTH);
     }
 
     if (m != nullptr) {
@@ -65,7 +62,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
  * If move is nullptr, all moves are tried and move is set to the optimal one
  * (or leave move as nullptr if there are no valid moves)
  */
-int Player::tryMove(Board board, Move*& move, Side side, bool isOpponent, int alpha, int beta, int depth) {
+int Player::tryMove(Board board, Move*& move, Side side, int depth) {
     if (move == nullptr) {
         /* if move is null, we want to first optimize the move,
         so the "other side" to optimize is actually the player side */
@@ -75,32 +72,30 @@ int Player::tryMove(Board board, Move*& move, Side side, bool isOpponent, int al
     }
 
     if (depth == 0) {
-        return board.getValue(isOpponent ? ((side == Side::BLACK) ? Side::WHITE : Side::BLACK) : side);
+        if (testingMinimax) {
+            return board.getNaiveValue(side);
+        } else {
+            return board.getValue(side);
+        }
     } else {
         Side other = (side == Side::BLACK) ? Side::WHITE : Side::BLACK;
         Move* oppMove = new Move(0, 0);
         Move* best = nullptr;
-        bool prune =false;
+        int maxSoFar = INT_MIN;
+
         for(int i = 0; i < 8; i++) {
             oppMove->setX(i);
             for(int j = 0; j < 8; j++) {
-                if(prune){
-                    break;
-                }
                 oppMove->setY(j);
                 if(board.checkMove(oppMove, other)){
-                    int score = -tryMove(board, oppMove, other, !isOpponent, -beta, -alpha, depth - 1);
+                    int newVal = tryMove(board, oppMove, other, depth - 1);
                     if (best == nullptr) {
                         best = new Move(i,j);
-                        alpha =score;
-                    } else if (score > alpha) {
+                        maxSoFar = newVal;
+                    } else if (newVal > maxSoFar) {
                         best->setX(i);
                         best->setY(j);
-                        alpha=score;
-                    }
-                    if(score >= beta){
-                        prune=true;
-                        break;
+                        maxSoFar = newVal;
                     }
                 }
             }
@@ -109,16 +104,10 @@ int Player::tryMove(Board board, Move*& move, Side side, bool isOpponent, int al
         delete oppMove;
         if (move == nullptr) {
             move = best; // return the best move using this reference param
-            if(prune){
-                return beta;
-            }
-            return alpha;
+            return maxSoFar;
         } else {
             delete best;
-            if(prune){
-                return beta;
-            }
-            return alpha;
+            return -maxSoFar;
         }
     }
 }
