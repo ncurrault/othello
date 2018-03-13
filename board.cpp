@@ -216,9 +216,7 @@ int Board::getNaiveValue(Side side){
 }
 int Board::getValue(Side side){
     int score = countBlack()-countWhite();
-    if(side==Side::WHITE){
-        score=-score;
-    }
+    
     //corners: 00 07 70 77
     //inners:  11 16 61 66
     int outer[2] = {0,7};

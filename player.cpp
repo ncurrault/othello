@@ -1,7 +1,7 @@
 #include "player.hpp"
 
 #define TEST_MINIMAX_DEPTH 2
-#define FULL_MINIMAX_DEPTH 5
+#define FULL_MINIMAX_DEPTH 8
 
 /*
  * Constructor for the player; initialize everything here. The side your AI is
@@ -44,8 +44,8 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     b.doMove(opponentsMove,opponentSide);
 
     Move *m = nullptr;
-    int alpha = INT_MIN;
-    int beta = INT_MAX;
+    int alpha = INT_MIN+5;
+    int beta = INT_MAX-5;
 
     if (testingMinimax) {
         tryMove(b, m, playerSide, false, alpha, beta, TEST_MINIMAX_DEPTH);
@@ -84,21 +84,27 @@ int Player::tryMove(Board board, Move*& move, Side side, bool isOpponent, int al
         Side other = (side == Side::BLACK) ? Side::WHITE : Side::BLACK;
         Move* oppMove = new Move(0, 0);
         Move* best = nullptr;
-        int maxSoFar = INT_MIN;
-
+        bool prune =false;
         for(int i = 0; i < 8; i++) {
             oppMove->setX(i);
             for(int j = 0; j < 8; j++) {
+                if(prune){
+                    break;
+                }
                 oppMove->setY(j);
                 if(board.checkMove(oppMove, other)){
-                    int newVal = tryMove(board, oppMove, other, !isOpponent, alpha, beta, depth - 1);
+                    int score = -tryMove(board, oppMove, other, !isOpponent, -beta, -alpha, depth - 1);
                     if (best == nullptr) {
                         best = new Move(i,j);
-                        maxSoFar = newVal;
-                    } else if (newVal > maxSoFar) {
+                        alpha =score;
+                    } else if (score > alpha) {
                         best->setX(i);
                         best->setY(j);
-                        maxSoFar = newVal;
+                        alpha=score;
+                    }
+                    if(score >= beta){
+                        prune=true;
+                        break;
                     }
                 }
             }
@@ -107,10 +113,16 @@ int Player::tryMove(Board board, Move*& move, Side side, bool isOpponent, int al
         delete oppMove;
         if (move == nullptr) {
             move = best; // return the best move using this reference param
-            return maxSoFar;
+            if(prune){
+                return beta;
+            }
+            return alpha;
         } else {
             delete best;
-            return -maxSoFar;
+            if(prune){
+                return beta;
+            }
+            return alpha;
         }
     }
 }
