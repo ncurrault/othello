@@ -17,7 +17,7 @@ public:
     ~Player();
 
     Move *doMove(Move *opponentsMove, int msLeft);
-    int tryMove(Board board, Move*& move, Side side, bool isOpponent, int& alpha, int& beta, int depth);
+    int tryMove(Board board, Move*& move, Side side, bool isOpponent, int alpha, int beta, int depth);
     void setBoard(char data[]);
 
     // Flag to tell if the player is running within the test_minimax context
